@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation"; // Import usePathname
 import {
   motion,
   AnimatePresence,
@@ -22,6 +23,9 @@ const navLinks = [
 ];
 
 export default function Navbar() {
+  const pathname = usePathname(); // Get current route
+  const isHomePage = pathname === "/"; // Check if it's the home page
+
   const [hidden, setHidden] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -51,6 +55,10 @@ export default function Navbar() {
     }
   }, [isOpen]);
 
+  // Determine if the glass effect should be active
+  // Active if: (It's not the home page) OR (It's the home page AND we've scrolled)
+  const showGlassEffect = !isHomePage || isScrolled;
+
   return (
     <>
       <motion.nav
@@ -61,7 +69,7 @@ export default function Navbar() {
         animate={hidden ? "hidden" : "visible"}
         transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
         className={`fixed top-0 left-0 w-full z-[100] transition-all duration-500 ease-in-out ${
-          isScrolled
+          showGlassEffect
             ? "h-20 bg-white/40 backdrop-blur-xl saturate-150 border-b border-white/20 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)]"
             : "h-24 bg-transparent border-b border-transparent"
         }`}
@@ -71,7 +79,7 @@ export default function Navbar() {
             <Link
               href="/"
               className={`relative flex items-center justify-center transition-all duration-700 ease-[0.23,1,0.32,1] ${
-                isScrolled
+                showGlassEffect
                   ? "bg-[#111] rounded-full w-14 h-14 shadow-lg shadow-black/20"
                   : "w-20 h-20"
               }`}
@@ -94,14 +102,13 @@ export default function Navbar() {
                   key={link.name}
                   href={link.href}
                   className={`group relative text-[13px] font-black tracking-[0.25em] transition-all duration-300 ${
-                    isScrolled ? "text-[#111]/80" : "text-white"
+                    showGlassEffect ? "text-[#111]/80" : "text-white"
                   } hover:text-[#111]`}
                 >
                   {link.name}
-                  {/* Underline Animation */}
                   <span
                     className={`absolute -bottom-1 left-1/2 w-0 h-[2px] transition-all duration-300 -translate-x-1/2 group-hover:w-full ${
-                      isScrolled ? "bg-[#111]" : "bg-[#e6a34d]"
+                      showGlassEffect ? "bg-[#111]" : "bg-[#e6a34d]"
                     }`}
                   />
                 </Link>
@@ -118,7 +125,7 @@ export default function Navbar() {
             <button
               onClick={() => setIsOpen(true)}
               className={`lg:hidden p-2 transition-colors ${
-                isScrolled ? "text-[#111]" : "text-white"
+                showGlassEffect ? "text-[#111]" : "text-white"
               }`}
             >
               <FontAwesomeIcon icon={faBars} className="text-xl" />
@@ -127,7 +134,6 @@ export default function Navbar() {
         </div>
       </motion.nav>
 
-      {/* Mobile Menu Overlay */}
       <AnimatePresence>
         {isOpen && (
           <motion.div

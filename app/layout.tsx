@@ -19,7 +19,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={inter.className}>
-      <body style={{ margin: 0, padding: 0, backgroundColor: "#fff" }}>
+      <body>
         <SmoothScrolling>
           <Navbar />
           <main>{children}</main>
