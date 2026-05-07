@@ -30,8 +30,8 @@ export default function GalleryPage() {
           </motion.div>
 
           <motion.p
-            initial={{ opacity: 0, tracking: "0.1em" }}
-            animate={{ opacity: 1, tracking: "0.4em" }}
+            initial={{ opacity: 0, letterSpacing: "0.1em" }} // Fixed: changed tracking to letterSpacing
+            animate={{ opacity: 1, letterSpacing: "0.4em" }} // Fixed: changed tracking to letterSpacing
             className="relative z-10 text-[#e6a34d] font-bold text-[11px] uppercase mb-4"
           >
             A Visual Journey
