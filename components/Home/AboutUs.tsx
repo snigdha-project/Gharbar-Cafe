@@ -1,13 +1,13 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link"; // 1. Import Link
 import { motion } from "framer-motion";
 
 export default function AboutUs() {
   return (
-    /* 
-       Increased pt-48 on mobile to clear the booking bar overlap.
-       Keeping md:pt-32 for larger screens where the overlap is less aggressive.
+    /* Increased pt-48 on mobile to clear the booking bar overlap.
+        Keeping md:pt-32 for larger screens where the overlap is less aggressive.
     */
     <section className="relative w-full pt-60 pb-24 md:pt-32 md:pb-32 bg-[#fffaf5] overflow-hidden">
       <div className="w-full px-6 md:px-10 lg:px-20 max-w-[1300px] mx-auto">
@@ -72,12 +72,15 @@ export default function AboutUs() {
               </p>
             </div>
 
-            <button className="mt-10 group relative px-10 py-4 border border-[#e6a34d] overflow-hidden transition-all duration-300">
-              <span className="relative z-10 text-[#e6a34d] text-[11px] font-bold tracking-[0.2em] uppercase group-hover:text-white transition-colors duration-300">
-                Read Our Story
-              </span>
-              <div className="absolute inset-0 bg-[#e6a34d] translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-            </button>
+            {/* 2. Wrap the button in a Link component */}
+            <Link href="/about">
+              <button className="mt-10 cursor-pointer group relative px-10 py-4 border border-[#e6a34d] overflow-hidden transition-all duration-300">
+                <span className="relative z-10 text-[#e6a34d] text-[11px] font-bold tracking-[0.2em] uppercase group-hover:text-white transition-colors duration-300">
+                  Read Our Story
+                </span>
+                <div className="absolute inset-0 bg-[#e6a34d] translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+              </button>
+            </Link>
           </motion.div>
         </div>
       </div>

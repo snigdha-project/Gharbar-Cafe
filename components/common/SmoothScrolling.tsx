@@ -1,26 +1,19 @@
 "use client";
 
-import { ReactLenis } from "lenis/react"; // Updated import path
+// @ts-ignore
+import { ReactLenis } from "lenis/react";
 import { ReactNode } from "react";
 
-export default function SmoothScrolling({ children }: { children: ReactNode }) {
+export default function SmoothScroll({ children }: { children: ReactNode }) {
   return (
-    <ReactLenis root options={{ lerp: 0.1, duration: 1.5, smoothWheel: true }}>
-      <style jsx global>{`
-        html.lenis,
-        html.lenis body {
-          height: auto;
-        }
-        .lenis.lenis-smooth {
-          scroll-behavior: auto !important;
-        }
-        .lenis.lenis-smooth [data-lenis-prevent] {
-          overscroll-behavior: contain;
-        }
-        .lenis.lenis-stopped {
-          overflow: hidden;
-        }
-      `}</style>
+    <ReactLenis
+      root
+      options={{
+        lerp: 0.08,
+        duration: 1.2,
+        smoothWheel: true,
+      }}
+    >
       {children}
     </ReactLenis>
   );
