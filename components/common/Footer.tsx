@@ -14,8 +14,7 @@ const footerLinks = {
   quickLinks: [
     { name: "Our Story", href: "/about" },
     { name: "Accommodations", href: "/rooms" },
-    { name: "Dining & Barcafe", href: "/experience" },
-    { name: "Spa & Wellness", href: "/spa" },
+    { name: "Dining & Cafe", href: "/cafe" },
     { name: "Journal", href: "/blogs" },
   ],
   legal: [

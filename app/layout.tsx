@@ -4,6 +4,7 @@ import "./globals.css";
 import SmoothScrolling from "@/components/common/SmoothScrolling";
 import Navbar from "@/components/common/Navbar";
 import Footer from "@/components/common/Footer";
+import PageLoader from "@/components/common/PageLoader";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,6 +21,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={inter.className}>
       <body>
+        <PageLoader />
         <SmoothScrolling>
           <Navbar />
           <main>{children}</main>

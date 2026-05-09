@@ -16,7 +16,7 @@ import { faBars, faTimes } from "@fortawesome/free-solid-svg-icons";
 const navLinks = [
   { name: "HOME", href: "/" },
   { name: "ROOMS", href: "/rooms" },
-  { name: "EXPERIENCE", href: "/experience" },
+  { name: "Dining & Cafe", href: "/cafe" },
   { name: "GALLERY", href: "/gallery" },
   { name: "BLOGS", href: "/blogs" },
   { name: "CONTACT", href: "/contact" },
