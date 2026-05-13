@@ -1,9 +1,12 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLeaf, faHistory, faAward } from "@fortawesome/free-solid-svg-icons";
+
+const MotionLink = motion(Link);
 
 const AboutUs = () => {
   return (
@@ -165,13 +168,14 @@ const AboutUs = () => {
               Experience the Exceptional.
             </span>
           </h2>
-          <motion.button
+          <MotionLink
+            href="/rooms"
             whileHover={{ scale: 1.05, backgroundColor: "#B8860B" }}
             whileTap={{ scale: 0.95 }}
-            className="bg-[#D4AF37] text-[#1A1A1A] px-14 py-5 uppercase tracking-[0.2em] text-xs font-bold transition-all shadow-2xl"
+            className="inline-block bg-[#D4AF37] text-[#1A1A1A] px-14 py-5 uppercase tracking-[0.2em] text-xs font-bold transition-all shadow-2xl cursor-pointer"
           >
             Plan Your Visit
-          </motion.button>
+          </MotionLink>
         </div>
       </section>
     </div>

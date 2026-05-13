@@ -224,7 +224,7 @@ export default function BookingBar() {
         {/* Submit */}
         <button
           type="submit"
-          className="md:w-[20%] bg-[#e6a34d] text-white py-6 md:py-0 text-[10px] font-black tracking-widest uppercase hover:bg-gray-900 transition-colors duration-500"
+          className="md:w-[20%] bg-[#e6a34d] text-white py-6 md:py-0 text-[10px] font-black tracking-widest uppercase hover:bg-gray-900 transition-colors duration-500 cursor-pointer"
         >
           Check Availability
         </button>

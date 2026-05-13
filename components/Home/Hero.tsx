@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import BookingBar from "./BookingBar";
 
@@ -54,9 +55,12 @@ export default function Hero() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}
         >
-          <button className="bg-[#e6a34d] text-gray-900 px-12 py-5 text-[11px] font-bold tracking-[0.2em] uppercase hover:bg-[#d4923c] transition-all">
+          <Link
+            href="/about"
+            className="inline-block bg-[#e6a34d] text-gray-900 px-12 py-5 text-[11px] font-bold tracking-[0.2em] uppercase hover:bg-[#d4923c] transition-all"
+          >
             Discover More
-          </button>
+          </Link>
         </motion.div>
       </div>
 
