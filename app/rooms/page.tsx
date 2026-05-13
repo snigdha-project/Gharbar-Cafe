@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { Suspense } from "react";
 import BookingForm from "./BookingForm";
-import { PLANS, PRICING, formatINR } from "@/lib/rooms";
+import { PLANS, PRICING, ROOMS, formatINR } from "@/lib/rooms";
 import RouteLoader from "@/components/common/RouteLoader";
 
 export const metadata = {
@@ -9,43 +9,6 @@ export const metadata = {
   description:
     "Premium and Standard rooms in Dharamshala — book your stay with seasonal pricing across EP / CP / MAP plans.",
 };
-
-const ROOMS = [
-  {
-    id: "premium" as const,
-    name: "Premium Room",
-    image: "/gallery/g22.png",
-    blurb:
-      "Our spacious mountain-facing room with king-sized bed, large windows, and an ensuite bath. Built for slow mornings and long views.",
-    amenities: [
-      "King-sized bed",
-      "Mountain / valley view",
-      "Ensuite bathroom with hot water",
-      "Tea & coffee maker",
-      "Free Wi-Fi",
-      "Daily housekeeping",
-    ],
-    occupancy: "2 guests",
-    sizeSqFt: "320 sq.ft.",
-  },
-  {
-    id: "standard" as const,
-    name: "Standard Room",
-    image: "/gallery/g18.png",
-    blurb:
-      "A cosy, well-appointed room with all the essentials of a boutique stay — soft linens, a hot shower, and the same warm hospitality.",
-    amenities: [
-      "Queen-sized bed",
-      "Garden / courtyard view",
-      "Ensuite bathroom with hot water",
-      "Tea & coffee maker",
-      "Free Wi-Fi",
-      "Daily housekeeping",
-    ],
-    occupancy: "2 guests",
-    sizeSqFt: "240 sq.ft.",
-  },
-];
 
 export default function RoomsPage() {
   return (

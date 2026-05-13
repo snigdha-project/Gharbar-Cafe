@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -9,7 +9,14 @@ import {
   faBed,
   faChevronDown,
 } from "@fortawesome/free-solid-svg-icons";
-import { ROOM_TYPES, toISODate, type RoomType } from "@/lib/rooms";
+import {
+  MAX_GUESTS_PER_ROOM,
+  ROOM_TYPES,
+  maxGuestsFor,
+  maxRoomsFor,
+  toISODate,
+  type RoomType,
+} from "@/lib/rooms";
 
 function todayISO(): string {
   return toISODate(new Date());
@@ -29,6 +36,19 @@ export default function BookingBar() {
   const [rooms, setRooms] = useState<number>(1);
   const [roomType, setRoomType] = useState<RoomType>("premium");
   const [showGuests, setShowGuests] = useState(false);
+
+  const maxRooms = maxRoomsFor(roomType);
+  const maxGuests = maxGuestsFor(roomType, rooms);
+
+  // Clamp room count to the type's inventory when the room type changes.
+  useEffect(() => {
+    if (rooms > maxRooms) setRooms(maxRooms);
+  }, [rooms, maxRooms]);
+
+  // Clamp guest count if cap shrinks below the current value.
+  useEffect(() => {
+    if (guests > maxGuests) setGuests(maxGuests);
+  }, [guests, maxGuests]);
 
   const guestsLabel = useMemo(
     () => `${guests} guest${guests > 1 ? "s" : ""}, ${rooms} room${rooms > 1 ? "s" : ""}`,
@@ -176,16 +196,20 @@ export default function BookingBar() {
                 label="Guests"
                 value={guests}
                 min={1}
-                max={10}
+                max={maxGuests}
                 onChange={setGuests}
               />
               <Counter
                 label="Rooms"
                 value={rooms}
                 min={1}
-                max={5}
+                max={maxRooms}
                 onChange={setRooms}
               />
+              <p className="text-[10px] text-gray-500 mt-1">
+                Max {MAX_GUESTS_PER_ROOM[roomType]} guests per {roomType} room ·{" "}
+                {maxRooms} {roomType} rooms total.
+              </p>
               <button
                 type="button"
                 onClick={() => setShowGuests(false)}

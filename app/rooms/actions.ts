@@ -3,15 +3,19 @@
 import { revalidatePath } from "next/cache";
 import { supabase } from "@/lib/supabase";
 import {
+  MAX_GUESTS_PER_ROOM,
   PLANS,
   ROOM_TYPES,
   fromISODate,
+  maxGuestsFor,
+  maxRoomsFor,
   quoteStay,
   formatINR,
   type Plan,
   type RoomType,
 } from "@/lib/rooms";
 import { escapeHtml, sendEmail } from "@/lib/email";
+import { submitToZohoForm } from "@/lib/zoho";
 
 export type BookingState = {
   ok?: boolean;
@@ -40,6 +44,7 @@ export async function createBookingAction(
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(guest_email)) {
     return { error: "Please enter a valid email." };
   }
+  if (!guest_phone) return { error: "Please enter your phone number." };
   if (!ROOM_TYPES.some((r) => r.id === room_type)) {
     return { error: "Choose a valid room type." };
   }
@@ -58,11 +63,21 @@ export async function createBookingAction(
   if (ci.getTime() < today.getTime()) {
     return { error: "Check-in date can't be in the past." };
   }
-  if (!Number.isFinite(guests) || guests < 1 || guests > 10) {
-    return { error: "Guest count must be between 1 and 10." };
+  const roomCap = maxRoomsFor(room_type);
+  if (!Number.isFinite(rooms) || rooms < 1 || rooms > roomCap) {
+    return {
+      error: `Room count must be between 1 and ${roomCap} for ${room_type} rooms.`,
+    };
   }
-  if (!Number.isFinite(rooms) || rooms < 1 || rooms > 5) {
-    return { error: "Room count must be between 1 and 5." };
+  const guestCap = maxGuestsFor(room_type, rooms);
+  if (!Number.isFinite(guests) || guests < 1 || guests > guestCap) {
+    const perRoom = MAX_GUESTS_PER_ROOM[room_type];
+    return {
+      error:
+        rooms > 1
+          ? `Guests must be between 1 and ${guestCap} (max ${perRoom} per ${room_type} room).`
+          : `Guests must be between 1 and ${perRoom} for a ${room_type} room.`,
+    };
   }
 
   const quote = quoteStay(ci, co, room_type, plan, rooms);
@@ -151,6 +166,18 @@ export async function createBookingAction(
       subject: `New booking · ${guest_name} · ${check_in} → ${check_out}`,
       html: adminHtml,
       replyTo: guest_email,
+    }),
+    submitToZohoForm({
+      guest_name,
+      guest_email,
+      guest_phone,
+      room_type,
+      plan,
+      check_in,
+      check_out,
+      rooms,
+      guests,
+      special_requests,
     }),
   ]);
 

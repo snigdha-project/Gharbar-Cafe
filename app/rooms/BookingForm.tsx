@@ -23,13 +23,17 @@ import {
   faCircleExclamation,
   faSackDollar,
   faIndianRupeeSign,
+  faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import {
+  MAX_GUESTS_PER_ROOM,
   PLANS,
   PRICING,
   ROOM_TYPES,
   formatINR,
   fromISODate,
+  maxGuestsFor,
+  maxRoomsFor,
   quoteStay,
   toISODate,
   type Plan,
@@ -85,10 +89,14 @@ export default function BookingForm() {
     FormData
   >(createBookingAction, undefined);
   const formRef = useRef<HTMLFormElement | null>(null);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const successBookingIdRef = useRef<string | undefined>(undefined);
 
-  // Reset form on success
+  // Reset form on success + open the success modal.
   useEffect(() => {
     if (state?.ok) {
+      successBookingIdRef.current = state.bookingId;
+      setShowSuccess(true);
       formRef.current?.reset();
       setRoomType("premium");
       setPlan("cp");
@@ -96,10 +104,31 @@ export default function BookingForm() {
       setCheckOut(tomorrowISO());
       setGuests(2);
       setRooms(1);
-      // Smooth-scroll to the success banner
-      window.scrollTo({ top: 0, behavior: "smooth" });
     }
-  }, [state?.ok]);
+  }, [state?.ok, state?.bookingId]);
+
+  // Close the success modal on ESC.
+  useEffect(() => {
+    if (!showSuccess) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setShowSuccess(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [showSuccess]);
+
+  const maxRooms = maxRoomsFor(roomType);
+  const maxGuests = maxGuestsFor(roomType, rooms);
+
+  // Clamp room count to the type's inventory when the room type changes.
+  useEffect(() => {
+    if (rooms > maxRooms) setRooms(maxRooms);
+  }, [rooms, maxRooms]);
+
+  // Clamp guest count when room type or room count drops the cap below it.
+  useEffect(() => {
+    if (guests > maxGuests) setGuests(maxGuests);
+  }, [guests, maxGuests]);
 
   const quote = useMemo(() => {
     const ci = fromISODate(checkIn);
@@ -132,33 +161,8 @@ export default function BookingForm() {
           </p>
         </div>
 
-        {/* Banner: success / error */}
+        {/* Error banner (success is shown as a modal — see below) */}
         <AnimatePresence>
-          {state?.ok && (
-            <motion.div
-              key="ok"
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="mb-8 rounded-xl bg-emerald-50 border border-emerald-200 px-5 py-4 flex items-start gap-3"
-            >
-              <FontAwesomeIcon
-                icon={faCheck}
-                className="text-emerald-600 mt-0.5"
-              />
-              <div className="text-sm text-emerald-900">
-                <p className="font-semibold">Booking received.</p>
-                <p>
-                  Reference{" "}
-                  <span className="font-mono">
-                    {state.bookingId?.slice(0, 8)}
-                  </span>
-                  . We've emailed your confirmation and our team will reach
-                  out shortly.
-                </p>
-              </div>
-            </motion.div>
-          )}
           {state?.error && (
             <motion.div
               key="err"
@@ -175,6 +179,12 @@ export default function BookingForm() {
             </motion.div>
           )}
         </AnimatePresence>
+
+        <SuccessModal
+          open={showSuccess}
+          bookingId={successBookingIdRef.current}
+          onClose={() => setShowSuccess(false)}
+        />
 
         <form
           ref={formRef}
@@ -302,12 +312,16 @@ export default function BookingForm() {
                   onChange={(e) => setGuests(Number(e.target.value))}
                   className={inputClass}
                 >
-                  {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => (
+                  {Array.from({ length: maxGuests }, (_, i) => i + 1).map((n) => (
                     <option key={n} value={n}>
                       {n} {n === 1 ? "guest" : "guests"}
                     </option>
                   ))}
                 </select>
+                <p className="text-[10px] text-gray-500 mt-1 normal-case tracking-normal">
+                  Max {MAX_GUESTS_PER_ROOM[roomType]} per {roomType} room
+                  {rooms > 1 ? ` · ${maxGuests} for ${rooms} rooms` : ""}
+                </p>
               </Field>
               <Field icon={faBed} label="Rooms">
                 <select
@@ -316,12 +330,15 @@ export default function BookingForm() {
                   onChange={(e) => setRooms(Number(e.target.value))}
                   className={inputClass}
                 >
-                  {Array.from({ length: 5 }, (_, i) => i + 1).map((n) => (
+                  {Array.from({ length: maxRooms }, (_, i) => i + 1).map((n) => (
                     <option key={n} value={n}>
                       {n} {n === 1 ? "room" : "rooms"}
                     </option>
                   ))}
                 </select>
+                <p className="text-[10px] text-gray-500 mt-1 normal-case tracking-normal">
+                  {maxRooms} {roomType} room{maxRooms === 1 ? "" : "s"} at the property
+                </p>
               </Field>
             </div>
 
@@ -336,11 +353,12 @@ export default function BookingForm() {
                     className={inputClass}
                   />
                 </Field>
-                <Field icon={faPhone} label="Phone">
+                <Field icon={faPhone} label="Phone" required>
                   <input
                     type="tel"
                     name="guest_phone"
                     placeholder="+91 99999 99999"
+                    required
                     className={inputClass}
                   />
                 </Field>
@@ -494,5 +512,134 @@ function Row({ k, v }: { k: string; v: React.ReactNode }) {
       </span>
       <span className="text-white font-medium">{v ?? "—"}</span>
     </div>
+  );
+}
+
+const SUPPORT_PHONE_DISPLAY = "+91 98827 88885";
+const SUPPORT_PHONE_TEL = "+919882788885";
+const SUPPORT_EMAIL = "bookgharbar@gmail.com";
+
+function SuccessModal({
+  open,
+  bookingId,
+  onClose,
+}: {
+  open: boolean;
+  bookingId: string | undefined;
+  onClose: () => void;
+}) {
+  return (
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          key="success-modal"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-[100] flex items-center justify-center px-4"
+          aria-modal="true"
+          role="dialog"
+        >
+          <motion.div
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={onClose}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          />
+          <motion.div
+            className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden"
+            initial={{ opacity: 0, scale: 0.92, y: 16 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 8 }}
+            transition={{ type: "spring", damping: 22, stiffness: 260 }}
+          >
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Close"
+              className="absolute top-4 right-4 w-9 h-9 rounded-full flex items-center justify-center text-gray-400 hover:text-[#1a1a1a] hover:bg-gray-100 transition-colors"
+            >
+              <FontAwesomeIcon icon={faXmark} />
+            </button>
+
+            <div className="bg-[#0e0e0e] text-white px-7 pt-8 pb-6">
+              <div className="w-12 h-12 rounded-full bg-[#e6a34d] text-[#1a1a1a] flex items-center justify-center mb-4">
+                <FontAwesomeIcon icon={faCheck} className="text-lg" />
+              </div>
+              <p className="text-[#e6a34d] uppercase tracking-[0.3em] text-[10px] font-bold mb-2">
+                Booking received
+              </p>
+              <h3 className="font-serif text-2xl md:text-3xl leading-tight">
+                Thank you — we've got your request.
+              </h3>
+              {bookingId && (
+                <p className="text-white/65 text-sm mt-3">
+                  Reference{" "}
+                  <span className="font-mono text-white">
+                    {bookingId.slice(0, 8)}
+                  </span>
+                </p>
+              )}
+            </div>
+
+            <div className="px-7 py-6 space-y-5 text-sm text-gray-700 leading-relaxed">
+              <p>
+                To complete your payment and for any other queries, please
+                contact us at:
+              </p>
+
+              <a
+                href={`tel:${SUPPORT_PHONE_TEL}`}
+                className="flex items-center gap-3 rounded-xl bg-[#fffaf5] border border-[#e6a34d]/30 px-4 py-3 hover:bg-[#e6a34d]/10 transition-colors"
+              >
+                <span className="w-9 h-9 rounded-full bg-[#e6a34d] text-[#1a1a1a] flex items-center justify-center shrink-0">
+                  <FontAwesomeIcon icon={faPhone} />
+                </span>
+                <div>
+                  <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-[#a87420]">
+                    Call
+                  </p>
+                  <p className="font-semibold text-[#1a1a1a]">
+                    {SUPPORT_PHONE_DISPLAY}
+                  </p>
+                </div>
+              </a>
+
+              <a
+                href={`mailto:${SUPPORT_EMAIL}`}
+                className="flex items-center gap-3 rounded-xl bg-[#fffaf5] border border-[#e6a34d]/30 px-4 py-3 hover:bg-[#e6a34d]/10 transition-colors"
+              >
+                <span className="w-9 h-9 rounded-full bg-[#e6a34d] text-[#1a1a1a] flex items-center justify-center shrink-0">
+                  <FontAwesomeIcon icon={faEnvelope} />
+                </span>
+                <div>
+                  <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-[#a87420]">
+                    Email
+                  </p>
+                  <p className="font-semibold text-[#1a1a1a]">
+                    {SUPPORT_EMAIL}
+                  </p>
+                </div>
+              </a>
+
+              <p className="text-xs text-gray-500">
+                We've also sent a confirmation email with your booking details.
+                Our team will reach out within a few hours to confirm
+                availability.
+              </p>
+
+              <button
+                type="button"
+                onClick={onClose}
+                className="w-full mt-2 inline-flex items-center justify-center gap-2 bg-[#1a1a1a] text-white font-bold uppercase tracking-[0.2em] text-xs py-3 rounded-lg hover:bg-[#e6a34d] hover:text-[#1a1a1a] transition-colors"
+              >
+                Got it
+              </button>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }

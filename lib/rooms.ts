@@ -14,6 +14,78 @@ export const ROOM_TYPES: { id: RoomType; label: string }[] = [
   { id: "standard", label: "Standard Room" },
 ];
 
+export const MAX_GUESTS_PER_ROOM: Record<RoomType, number> = {
+  premium: 3,
+  standard: 2,
+};
+
+export function maxGuestsFor(roomType: RoomType, rooms: number): number {
+  return MAX_GUESTS_PER_ROOM[roomType] * Math.max(1, rooms);
+}
+
+/** Total rooms of each type at the property — used to cap booking selectors. */
+export const ROOM_INVENTORY: Record<RoomType, number> = {
+  premium: 7,
+  standard: 9,
+};
+
+export function maxRoomsFor(roomType: RoomType): number {
+  return ROOM_INVENTORY[roomType];
+}
+
+export type RoomContent = {
+  id: RoomType;
+  name: string;
+  image: string;
+  blurb: string;
+  amenities: string[];
+  occupancy: string;
+  guests: number;
+  sizeSqFt: string;
+  sizeNum: number;
+};
+
+export const ROOMS: RoomContent[] = [
+  {
+    id: "premium",
+    name: "Premium Room",
+    image: "/gallery/g22.png",
+    blurb:
+      "Our spacious mountain-facing room with king-sized bed, large windows, and an ensuite bath. Built for slow mornings and long views.",
+    amenities: [
+      "King-sized bed",
+      "Mountain / valley view",
+      "Ensuite bathroom with hot water",
+      "Tea & coffee maker",
+      "Free Wi-Fi",
+      "Daily housekeeping",
+    ],
+    occupancy: "Up to 3 guests",
+    guests: 3,
+    sizeSqFt: "320 sq.ft.",
+    sizeNum: 320,
+  },
+  {
+    id: "standard",
+    name: "Standard Room",
+    image: "/gallery/g18.png",
+    blurb:
+      "A cosy, well-appointed room with all the essentials of a boutique stay — soft linens, a hot shower, and the same warm hospitality.",
+    amenities: [
+      "Queen-sized bed",
+      "Garden / courtyard view",
+      "Ensuite bathroom with hot water",
+      "Tea & coffee maker",
+      "Free Wi-Fi",
+      "Daily housekeeping",
+    ],
+    occupancy: "Up to 2 guests",
+    guests: 2,
+    sizeSqFt: "240 sq.ft.",
+    sizeNum: 240,
+  },
+];
+
 export const PLANS: {
   id: Plan;
   label: string;

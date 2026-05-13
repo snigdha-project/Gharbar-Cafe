@@ -14,8 +14,12 @@ create table if not exists bookings (
   plan text not null check (plan in ('ep', 'cp', 'map')),
   check_in date not null,
   check_out date not null,
-  guests int not null default 2 check (guests between 1 and 10),
-  rooms int not null default 1 check (rooms between 1 and 5),
+  -- Per-type caps (7 premium / 9 standard total · 3 premium-guests / 2 standard-guests
+  -- per room) are enforced in the app layer. DB ceilings are loose so server
+  -- validation, not the constraint, is what produces user-facing errors.
+  -- Max guests = max(7 × 3, 9 × 2) = 21. Max rooms = max(7, 9) = 9.
+  guests int not null default 2 check (guests between 1 and 21),
+  rooms int not null default 1 check (rooms between 1 and 9),
 
   -- Pricing snapshot at booking time
   total_amount numeric(10,2) not null,
