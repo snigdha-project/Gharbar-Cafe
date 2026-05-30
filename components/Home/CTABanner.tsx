@@ -2,8 +2,8 @@
 
 import React from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { motion } from "framer-motion";
+import { EXTERNAL_BOOKING_URL } from "@/lib/booking";
 
 export default function CTABanner() {
   return (
@@ -55,12 +55,14 @@ export default function CTABanner() {
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.4 }}
         >
-          <Link
-            href="/checkout"
-            className="inline-block bg-[#e6a34d] text-[#1a1a1a] px-12 py-5 text-[11px] font-bold tracking-[0.2em] uppercase hover:bg-white transition-all duration-500 shadow-xl"
+          <a
+            href={EXTERNAL_BOOKING_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block bg-[#e6a34d] text-[#1a1a1a] px-12 py-5 text-[11px] font-bold tracking-[0.2em] uppercase hover:bg-white transition-all duration-500 shadow-xl cursor-pointer"
           >
             Book Your Stay
-          </Link>
+          </a>
         </motion.div>
       </div>
     </section>

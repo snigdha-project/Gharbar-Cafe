@@ -12,6 +12,7 @@ import {
 } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { EXTERNAL_BOOKING_URL } from "@/lib/booking";
 
 const navLinks = [
   { name: "HOME", href: "/" },
@@ -115,14 +116,18 @@ export default function Navbar() {
               ))}
             </div>
 
-            <Link
-              href="/checkout"
+            <a
+              href={EXTERNAL_BOOKING_URL}
+              target="_blank"
+              rel="noopener noreferrer"
               className="bg-[#e6a34d] text-white px-9 py-3.5 text-[10px] font-bold tracking-[0.15em] hover:bg-[#111] hover:shadow-xl transition-all duration-500 whitespace-nowrap"
             >
               BOOK NOW
-            </Link>
+            </a>
 
             <button
+              type="button"
+              aria-label="Open menu"
               onClick={() => setIsOpen(true)}
               className={`lg:hidden p-2 transition-colors ${
                 showGlassEffect ? "text-[#111]" : "text-white"
@@ -154,6 +159,8 @@ export default function Navbar() {
               </div>
 
               <button
+                type="button"
+                aria-label="Close menu"
                 onClick={() => setIsOpen(false)}
                 className="text-white w-12 h-12 flex items-center justify-center rounded-full border border-white/10 hover:bg-white hover:text-black transition-all"
               >
@@ -184,13 +191,15 @@ export default function Navbar() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
               >
-                <Link
-                  href="/checkout"
+                <a
+                  href={EXTERNAL_BOOKING_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   onClick={() => setIsOpen(false)}
                   className="mt-6 bg-[#e6a34d] text-[#111] px-16 py-6 text-xs font-black uppercase tracking-[0.3em] hover:bg-white transition-all"
                 >
                   BOOK NOW
-                </Link>
+                </a>
               </motion.div>
             </nav>
           </motion.div>

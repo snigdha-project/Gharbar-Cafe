@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCalendarAlt,
@@ -17,6 +16,7 @@ import {
   toISODate,
   type RoomType,
 } from "@/lib/rooms";
+import { EXTERNAL_BOOKING_URL } from "@/lib/booking";
 
 function todayISO(): string {
   return toISODate(new Date());
@@ -29,7 +29,6 @@ function tomorrowISO(): string {
 }
 
 export default function BookingBar() {
-  const router = useRouter();
   const [checkIn, setCheckIn] = useState<string>(todayISO());
   const [checkOut, setCheckOut] = useState<string>(tomorrowISO());
   const [guests, setGuests] = useState<number>(2);
@@ -58,20 +57,12 @@ export default function BookingBar() {
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (checkOut <= checkIn) {
-      // Push checkout 1 day after checkin if invalid
       const next = new Date(checkIn);
       next.setDate(next.getDate() + 1);
       setCheckOut(toISODate(next));
       return;
     }
-    const params = new URLSearchParams({
-      checkIn,
-      checkOut,
-      guests: String(guests),
-      rooms: String(rooms),
-      room: roomType,
-    });
-    router.push(`/rooms?${params.toString()}#book`);
+    window.open(EXTERNAL_BOOKING_URL, "_blank", "noopener,noreferrer");
   };
 
   const itemClass =

@@ -2,8 +2,8 @@
 
 import React from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { motion } from "framer-motion";
+import { EXTERNAL_BOOKING_URL } from "@/lib/booking";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faLeaf,
@@ -20,7 +20,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 
-const MotionLink = motion(Link);
+const MotionA = motion.a;
 
 type NearbyPlace = {
   name: string;
@@ -349,14 +349,16 @@ const AboutUs = () => {
               Experience the Exceptional.
             </span>
           </h2>
-          <MotionLink
-            href="/rooms"
+          <MotionA
+            href={EXTERNAL_BOOKING_URL}
+            target="_blank"
+            rel="noopener noreferrer"
             whileHover={{ scale: 1.05, backgroundColor: "#B8860B" }}
             whileTap={{ scale: 0.95 }}
             className="inline-block bg-[#D4AF37] text-[#1A1A1A] px-14 py-5 uppercase tracking-[0.2em] text-xs font-bold transition-all shadow-2xl cursor-pointer"
           >
             Plan Your Visit
-          </MotionLink>
+          </MotionA>
         </div>
       </section>
     </div>

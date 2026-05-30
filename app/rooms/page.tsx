@@ -2,6 +2,7 @@ import Image from "next/image";
 import { Suspense } from "react";
 import BookingForm from "./BookingForm";
 import { PLANS, PRICING, ROOMS, formatINR } from "@/lib/rooms";
+import { EXTERNAL_BOOKING_URL } from "@/lib/booking";
 import RouteLoader from "@/components/common/RouteLoader";
 
 export const metadata = {
@@ -37,8 +38,10 @@ export default function RoomsPage() {
             and we'll quote a transparent total before you submit.
           </p>
           <a
-            href="#book"
-            className="inline-flex items-center gap-2 mt-10 px-7 py-3.5 rounded-full bg-[#e6a34d] text-[#1a1a1a] text-xs uppercase tracking-[0.25em] font-bold hover:bg-white transition-colors"
+            href={EXTERNAL_BOOKING_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 mt-10 px-7 py-3.5 rounded-full bg-[#e6a34d] text-[#1a1a1a] text-xs uppercase tracking-[0.25em] font-bold hover:bg-white transition-colors cursor-pointer"
           >
             Check availability
           </a>
@@ -124,8 +127,10 @@ export default function RoomsPage() {
                 </div>
 
                 <a
-                  href={`#book`}
-                  className="mt-7 inline-flex items-center gap-2 text-xs uppercase tracking-[0.25em] font-bold text-[#1a1a1a] border-b border-[#e6a34d] pb-1 hover:text-[#a87420] transition-colors"
+                  href={EXTERNAL_BOOKING_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-7 inline-flex items-center gap-2 text-xs uppercase tracking-[0.25em] font-bold text-[#1a1a1a] border-b border-[#e6a34d] pb-1 hover:text-[#a87420] transition-colors cursor-pointer"
                 >
                   Book this room →
                 </a>
